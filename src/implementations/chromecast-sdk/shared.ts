@@ -1,0 +1,1 @@
+export const MESSAGE_NAMESPACE = 'urn:x-cast:com.gdnmobilelab.presentationapishim';

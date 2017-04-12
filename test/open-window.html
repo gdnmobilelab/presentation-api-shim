@@ -1,0 +1,76 @@
+<!DOCTYPE>
+<html>
+
+<body>
+    <button id='do-connect' disabled>Connect Presentation</button>
+    <script src='../node_modules/systemjs/dist/system.js'></script>
+    <script>
+        SystemJS.config({
+            packages: {
+                '../dev': {
+                    defaultExtension: 'js'
+                },
+                'eventtarget': {
+                    main: '../../node_modules/eventtarget/EventTarget.js'
+                }
+            }
+        })
+
+        let libtype = window.location.search.substr(1);
+
+        SystemJS.import('../dev/implementations/' + libtype)
+            .then(function (assets) {
+                let Request = assets.PresentationRequest;
+
+                let button = document.getElementById('do-connect');
+
+                let testRequest = new Request([
+                    'http://127.0.0.1:8000/test/presentation-window.html?' + libtype,
+                    'https://google.com/cast/#__castAppId__=34B6F5E0'
+                ]);
+
+                function targetAvailable(available) {
+                    button.disabled = !available;
+                }
+
+                testRequest.getAvailability()
+                    .then((av) => {
+                        console.info("PresentationRequest availability initially set to", av.value);
+                        targetAvailable(av.value);
+
+                        av.onchange = function () {
+                            console.info("PresentationRequest availability changed to", av.value)
+                            targetAvailable(av.value);
+                        }
+
+                    })
+
+
+                button.addEventListener('click', function () {
+                    testRequest.start()
+                        .then(function (connection) {
+
+                            connection.onconnect = function () {
+                                console.info("Connection successfully established. Sending message...")
+                                connection.send(JSON.stringify({
+                                    hello: "ping"
+                                }));
+                            }
+
+                            connection.onmessage = function (e) {
+                                console.info("Received message in response...")
+                                let data = JSON.parse(e.data);
+                                if (data.hello === "pong") {
+                                    console.info("Closing connection")
+                                    connection.close();
+                                    alert("Success")
+                                }
+                            }
+
+                        })
+                })
+            })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "outDir": "./lib",
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true
+    },
+    "include": [
+        "src/**/*",
+        "node_modules/@types/chrome/index.d.ts",
+        "node_modules/@types/chrome/chrome-cast.d.ts"
+    ]
+}

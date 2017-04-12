@@ -1,0 +1,43 @@
+<!DOCTYPE>
+<html>
+
+<body style='background: #000'>
+    <h1 style="color: #fff;">Connected</h1>
+    <script src='../node_modules/systemjs/dist/system.js'></script>
+    <script>
+        SystemJS.config({
+            packages: {
+                '../dev': {
+                    defaultExtension: 'js'
+                },
+                'eventtarget': {
+                    main: '../../node_modules/eventtarget/EventTarget.js'
+                }
+            }
+        })
+        SystemJS.import('../dev/implementations/' + window.location.search.substr(1))
+            .then(function (assets) {
+                let receiver = assets.getReceiver();
+
+                receiver.connectionList.then(function (list) {
+                    list.onconnectionavailable = function (e) {
+                        console.info("Received new connection...")
+                        let connection = e.connection;
+
+                        connection.onmessage = function (e) {
+                            console.info("Received message...")
+                            let data = JSON.parse(e.data);
+                            if (data.hello === "ping") {
+                                console.info("Sending reply...")
+                                connection.send(JSON.stringify({
+                                    hello: "pong"
+                                }))
+                            }
+                        }
+                    }
+                });
+            })
+    </script>
+</body>
+
+</html>

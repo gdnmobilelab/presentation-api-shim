@@ -1,0 +1,16 @@
+{
+  "name": "presentation-api-shim",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "eventtarget": "^0.1.0"
+  },
+  "devDependencies": {
+    "systemjs": "^0.19.47"
+  },
+  "scripts": {
+    "dev": "tsc --p tsconfig.json --outDir ./dev --module system --watch --sourceMap",
+    "build": "tsc --p tsconfig.json"
+  }
+}
